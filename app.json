@@ -1,0 +1,31 @@
+{
+  "pages":[
+    "pages/blog/index",
+    "pages/logs/logs",
+    "pages/index/index"
+  ],
+  "window":{
+    "enablePullDownRefresh": true,
+    "onReachBottomDistance":250,
+    "backgroundTextStyle":"light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "WeChat",
+    "navigationBarTextStyle":"black"
+  },
+  "tabBar": {
+    "color": "#ccc",
+    "selectedColor": "#35495e",
+    "borderStyle": "white",
+    "backgroundColor": "#f9f9f9",
+    "list": [
+      {
+        "text": "博客",
+        "pagePath": "pages/blog/index"
+      },
+      {
+        "text": "新闻",
+        "pagePath": "pages/blog/index"
+      }
+    ]
+  }
+}
