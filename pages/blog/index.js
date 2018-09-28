@@ -2,16 +2,31 @@ var sliderWidth = 96; // 需要设置slider的宽度，用于计算中间位置
 var app = getApp()
 Page({
   data: {
-    popularityData:[],
-    indexData: [],
+    popularityData: [],
+    recommendData: [],
+    recommendDataIsLoaded: false,
+    allData: [],
+    allDataIsLoaded: false,
     page: 1,
     size: 10,
     items: [],
-    tabs: ["人气", "推荐","全部" ],
+    tabs: ["人气", "推荐", "全部"],
     activeIndex: 0,
     sliderOffset: 0,
     sliderLeft: 0,
-    scrollTop:5
+    scrollTop: 5,
+    srollHeight: 300
+  },
+  onShow: function() {
+    var that = this;
+    wx.getSystemInfo({
+      success: function(res) {
+        var height = res.windowHeight - 0; //footerpannelheight为底部组件的高度
+        that.setData({
+          srollHeight: height
+        });
+      }
+    })
   },
   onLoad: function() {
     var that = this;
@@ -25,25 +40,35 @@ Page({
       }
     });
   },
-  onPullDownRefresh: function() {
-    // 显示顶部刷新图标
-    wx.showNavigationBarLoading();
-    //var that = this;
-    this.setData({
-      page: 1
-    });
-    this.getIndexData(function() {
-      // 隐藏导航栏加载框
-      wx.hideNavigationBarLoading();
-      // 停止下拉动作
-      wx.stopPullDownRefresh();
-    });
+
+  // 上拉加载更多
+  loadMore: function () {
+    console.log(1);
+    var self = this;
+    // 当前页是最后一页
+    if (self.data.currentPage == self.data.allPages) {
+      self.setData({
+        loadMoreData: '已经到顶'
+      })
+      return;
+    }
+    setTimeout(function () {
+      console.log('上拉加载更多');
+      var tempCurrentPage = self.data.currentPage;
+      tempCurrentPage = tempCurrentPage + 1;
+      self.setData({
+        currentPage: tempCurrentPage,
+        hideBottom: false
+      })
+      self.getData();
+    }, 300);
   },
   scrollFn(e) {
     // 防抖，优化性能
     // 当滚动时，滚动条位置距离页面顶部小于设定值时，触发下拉刷新
     // 通过将设定值尽可能小，并且初始化scroll-view组件竖向滚动条位置为设定值。来实现下拉刷新功能，但没有官方的体验好
     //clearTimeout(this.timer)
+    console.loeg(e.detail.scrollTop + "," + this.data.scrollTop);
     if (e.detail.scrollTop < this.data.scrollTop) {
       this.refresh()
       // this.timer = setTimeout(() => {
@@ -61,40 +86,49 @@ Page({
       }
     })
   },
-  onReachBottom: function() {
-    //var that = this;
-    // 显示加载图标
+  getPopularity: function() {
     wx.showLoading({
-      title: '玩命加载中',
+      title: '加载中',
     })
-    // 页数+1
-    this.setData({
-      page: this.page + 1
-    });
-    this.getIndexData(function() {
-      // 隐藏加载框
-      wx.hideLoading();
-    });
-
-  },
-  getPopularity:function(){
     var that = this;
     wx.request({
       url: 'https://llweb.top/api/Blog/FortyeightHoursTopViewPosts/20',
-      success: function (res) {
+      success: function(res) {
+        wx.hideLoading();
         that.setData({
           popularityData: res.data.result
         });
       }
     })
   },
-  getIndexData: function(callbackfun) {
+  getRecommendData: function() {
+    wx.showLoading({
+      title: '加载中',
+    });
+    var that = this;
+    wx.request({
+      url: 'https://llweb.top/api/Blog/TenDaysTopDiggPosts/20',
+      success: function(res) {
+        wx.hideLoading();
+        that.setData({
+          recommendData: res.data.result,
+          recommendDataIsLoaded: true
+        });
+      }
+    })
+  },
+  getAllData: function(callbackfun) {
+    wx.showLoading({
+      title: '加载中',
+    });
     var that = this;
     wx.request({
       url: 'https://llweb.top/api/Blog/Paged/' + that.data.page + '/' + that.data.size,
       success: function(res) {
+        wx.hideLoading();
         that.setData({
-          indexData: res.data.result
+          allData: res.data.result,
+          allDataIsLoaded:true
         });
         if (callbackfun) {
           callbackfun();
@@ -106,9 +140,14 @@ Page({
     if (e.currentTarget.id == "0") {
 
     } else if (e.currentTarget.id == "1") {
-      this.getIndexData();
-    } else if (e.currentTarget.id == "2") {
+      if (!this.data.recommendDataIsLoaded) {
+        this.getRecommendData();
+      }
 
+    } else if (e.currentTarget.id == "2") {
+      if (!this.data.allDataIsLoaded) {
+        this.getAllData();
+      }
     }
     this.setData({
       sliderOffset: e.currentTarget.offsetLeft,

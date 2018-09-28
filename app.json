@@ -1,17 +1,17 @@
 {
   "pages": [
+    "pages/index/index",
     "pages/blog/index",
     "pages/news/index",
-    "pages/index/index",
     "pages/blog/detail"
   ],
   "window": {
-    "enablePullDownRefresh": true,
+    "enablePullDownRefresh": false,
     "onReachBottomDistance": 250,
     "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#fff",
-    "navigationBarTitleText": "WeChat",
-    "navigationBarTextStyle": "black"
+    "navigationBarBackgroundColor": "#3281ff",
+    "navigationBarTitleText": "博客园",
+    "navigationBarTextStyle": "light"
   },
   "tabBar": {
     "color": "#ccc",
@@ -21,11 +21,15 @@
     "list": [
       {
         "text": "博客",
-        "pagePath": "pages/blog/index"
+        "pagePath": "pages/blog/index",
+        "iconPath":"img/blog-off.png",
+        "selectedIconPath":"img/blog-on.png"
       },
       {
         "text": "新闻",
-        "pagePath": "pages/news/index"
+        "pagePath": "pages/news/index",
+        "iconPath": "img/news-off.png",
+        "selectedIconPath": "img/news-on.png"
       }
     ]
   }

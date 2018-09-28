@@ -13,14 +13,17 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    wx.showLoading({
+      title: '加载中',
+    })
+    var id=options.id;
     var that = this;
     wx.request({
-      url: 'https://llweb.top/api/News/Item/607766',
+      url: 'https://llweb.top/api/Blog/Body/'+id,
       success: function (res) {
-        that.setData({
-          indexData: res.data.result
-        });
-        WxParse.wxParse('content', 'html', res.data.result.content, that, 5);
+        wx.hideLoading();
+        console.log(res.data.result)
+        WxParse.wxParse('content', 'html', res.data.result, that, 5);
       }
     })
   },
